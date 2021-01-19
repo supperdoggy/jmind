@@ -3,7 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 )
+
+var cache = Cache{
+	M:   map[string]getValueReqAnswer{},
+	mut: sync.Mutex{},
+}
 
 func main() {
 	fmt.Println("Starting server...")

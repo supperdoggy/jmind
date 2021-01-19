@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/big"
+	"net/http"
 	"strconv"
 )
 
@@ -69,4 +70,11 @@ func countValue(transactions []Transaction) string {
 // getApiLink- generates api link
 func getApiLink(tag string) string {
 	return fmt.Sprintf("https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=%v&boolean=true&apikey=YourApiKeyToken", tag)
+}
+
+// SendJsonAnswer - sends answer with given data and status code
+func SendJsonAnswer(w http.ResponseWriter, status int, data []byte) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write(data)
 }
