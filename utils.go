@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math/big"
 	"net/http"
 	"regexp"
@@ -75,7 +76,7 @@ func countValue(transactions []Transaction) string {
 
 // getApiLink- generates api link
 func getApiLink(tag string) string {
-	return fmt.Sprintf("https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=%v&boolean=true&apikey=YourApiKeyToken", tag)
+	return fmt.Sprintf("https://api.etherscan.io/api?module=proxy&action=eth_getBlockByNumber&tag=%v&boolean=true&apikey=%v", tag, ApiKey)
 }
 
 // SendJsonAnswer - sends answer with given data and status code
@@ -83,4 +84,14 @@ func SendJsonAnswer(w http.ResponseWriter, status int, data []byte) (int, error)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	return w.Write(data)
+}
+
+func getApiKey() string {
+	dat, err := ioutil.ReadFile("./key.txt")
+	if err != nil {
+		fmt.Println("getApiKey() error:", err.Error())
+		return "YourApiKeyToken"
+	}
+	fmt.Println("Api key is", string(dat))
+	return string(dat)
 }

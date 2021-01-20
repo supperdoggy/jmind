@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -49,48 +48,31 @@ func getValueReq(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	// making req to api
-	path := getApiLink(fmt.Sprintf("%x", blocknum))
-	resp, err := http.Get(path)
+	// send req to api
+	Answer, err := getBlockByNumber(blocknum)
 	if err != nil {
+		fmt.Println("getValueReq() error:", err.Error())
 		SendJsonAnswer(writer, http.StatusBadRequest, []byte{})
-		fmt.Println("error making req", err.Error())
 		return
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		SendJsonAnswer(writer, http.StatusBadRequest, []byte{})
-		fmt.Println("error reading body", err.Error())
-		return
-	}
-	defer resp.Body.Close()
-
-	// resp we got from api
-	var Answer struct {
-		R Result `json:"result"`
-	}
-
-	if err := json.Unmarshal(body, &Answer); err != nil {
-		data := obj{"error": "api key error, try again"}
-		marshaled, _ := json.Marshal(data)
-		SendJsonAnswer(writer, http.StatusBadRequest, marshaled)
-		fmt.Println("error unmarshal", err.Error(), string(body))
-		return
-	}
 	// enumerating total number of Ether
 	amount := countValue(Answer.R.Transactions)
+	fmt.Println(amount)
 	// prepating answer
 	answer := getValueReqAnswer{
 		Amount:       amount,
 		Transactions: len(Answer.R.Transactions),
 	}
+
 	answerJson, err := json.Marshal(answer)
 	if err != nil {
 		SendJsonAnswer(writer, http.StatusBadRequest, []byte{})
 		fmt.Println("Marshal error:", err.Error())
 		return
 	}
-	SendJsonAnswer(writer, http.StatusOK, answerJson)
+	if status, err := SendJsonAnswer(writer, http.StatusOK, answerJson); err != nil {
+		fmt.Printf("SendJsonAnswer() error: %v, status: %v", err.Error(), status)
+	}
 	cache.WriteToCache(fmt.Sprintf("%x", blocknum), answer)
 }

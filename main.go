@@ -6,13 +6,16 @@ import (
 	"sync"
 )
 
-var cache = Cache{
-	M:   map[string]getValueReqAnswer{},
-	mut: sync.Mutex{},
-}
+var (
+	cache = Cache{
+		M:   map[string]getValueReqAnswer{},
+		mut: sync.Mutex{},
+	}
+	ApiKey = getApiKey()
+)
 
 func main() {
-	fmt.Println("Starting server...")
+	fmt.Println("Started server...")
 
 	http.HandleFunc("/api/block/", getValueReq)
 	// staring server

@@ -17,6 +17,7 @@ func TestIntToHexa(t *testing.T) {
 		{number: 3132321, expectedResult: "2fcba1"},
 		{number: -1, expectedResult: "-1"},
 		{number: -12312332, expectedResult: "-bbdf0c"},
+		{number: 312321321312, expectedResult: "48b7cd2960"},
 	}
 
 	for _, v := range tests {

@@ -13,6 +13,10 @@ type Result struct {
 	Transactions []Transaction `json:"transactions"`
 }
 
+type GetBlockByNumberStruct struct {
+	R Result `json:"result"`
+}
+
 type getValueReqAnswer struct {
 	Amount       string `json:"amount"`
 	Transactions int    `json:"transactions"`
