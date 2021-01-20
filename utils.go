@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"regexp"
 	"strconv"
 )
 
@@ -40,6 +41,11 @@ func (unit *Unit) InitUnit() *Unit {
 
 // FromWei func calculate number / unitfactor return string
 func FromWei(number string) string {
+	rg := regexp.MustCompile("0[xX][0-9a-fA-F]+")
+	if !rg.MatchString(number) {
+		return ""
+	}
+
 	unit := new(Unit)
 	unit = unit.InitUnit()
 	bigFloatNumber, _ := new(big.Float).SetString(number)
@@ -73,8 +79,8 @@ func getApiLink(tag string) string {
 }
 
 // SendJsonAnswer - sends answer with given data and status code
-func SendJsonAnswer(w http.ResponseWriter, status int, data []byte) {
+func SendJsonAnswer(w http.ResponseWriter, status int, data []byte) (int, error) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	w.Write(data)
+	return w.Write(data)
 }
